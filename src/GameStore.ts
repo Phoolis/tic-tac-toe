@@ -1,40 +1,36 @@
-import { create } from "zustand";
+import { create } from "zustand"
 //import { combine } from "zustand/middleware";
 
-export type Squares = (string | null)[];
+export type Squares = (string | null)[]
 
 interface GameStore {
-  squares: Squares;
-  xIsNext: boolean;
-  setSquares: (nextSquares: Squares | ((prev: Squares) => Squares)) => void;
-  setXIsNext: (nextXIsNext: boolean | ((prev: boolean) => boolean)) => void;
+  history: Squares[]
+  currentMove: number
+  setHistory: (nextHistory: Squares[] | ((prev: Squares[]) => Squares[])) => void
+  setCurrentMove: (nextCurrentMove: number | ((prev: number) => number)) => void
 }
 
 // Here we define the state and actions inline
 export const useGameStore = create<GameStore>((set) => ({
   // set initial states
-  squares: Array(9).fill(null),
-  xIsNext: true,
+  history: [Array(9).fill(null)] as Squares[],
+  currentMove: 0,
 
   // define actions
-  setSquares: (nextSquares) => {
+  setHistory: (nextHistory) => {
     set((state) => ({
-      squares:
-        typeof nextSquares === "function"
-          ? nextSquares(state.squares)
-          : nextSquares,
-    }));
+      history: typeof nextHistory === "function" ? nextHistory(state.history) : nextHistory,
+    }))
   },
-
-  setXIsNext: (nextXIsNext) => {
+  setCurrentMove: (nextCurrentMove) => {
     set((state) => ({
-      xIsNext:
-        typeof nextXIsNext === "function"
-          ? nextXIsNext(state.xIsNext)
-          : nextXIsNext,
-    }));
+      currentMove:
+        typeof nextCurrentMove === "function"
+          ? nextCurrentMove(state.currentMove)
+          : nextCurrentMove,
+    }))
   },
-}));
+}))
 
 // Original tutorial used combine() to define both state and actions in one store
 // I find the above more understandable

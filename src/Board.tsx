@@ -1,28 +1,27 @@
-import { useGameStore, type Squares } from "./GameStore";
+import { type Squares } from "./GameStore"
 
-import Square from "./Square";
+import Square from "./Square"
 
-export default function Board() {
-  // The board component subscribes to these two parts of the store
-  // Any time either of them changes, the Board component is re-run (rendered)
-  const squares = useGameStore((state) => state.squares);
-  const xIsNext = useGameStore((state) => state.xIsNext);
+type BoardProps = {
+  xIsNext: boolean
+  squares: Squares
+  onPlay: (squares: Squares) => void
+}
 
-  const setSquares = useGameStore((state) => state.setSquares);
-  const setXIsNext = useGameStore((state) => state.setXIsNext);
-
-  // And on render, these constants are also re-evaluated:
-  const player = xIsNext ? "X" : "O";
-  const winner = calculateWinner(squares);
-  const turns = calculateTurns(squares);
-  const status = calculateStatus(winner, turns, player);
+export default function Board({ xIsNext, squares, onPlay }: BoardProps) {
+  // The board component subscribes to these parts of the store (by receiving them as props from Game)
+  // Any time one of them changes, the Board component is re-run (re-rendered)
+  // On every render these constants are also re-evaluated
+  const player = xIsNext ? "X" : "O"
+  const winner = calculateWinner(squares)
+  const turns = calculateTurns(squares)
+  const status = calculateStatus(winner, turns, player)
 
   function handleClick(i: number) {
-    if (squares[i] || winner) return;
-    const nextSquares = squares.slice();
-    nextSquares[i] = player;
-    setSquares(nextSquares);
-    setXIsNext(!xIsNext); // Flip the boolean state
+    if (squares[i] || winner) return
+    const nextSquares = squares.slice()
+    nextSquares[i] = player
+    onPlay(nextSquares)
   }
 
   return (
@@ -39,15 +38,11 @@ export default function Board() {
         }}
       >
         {squares.map((square, squareIndex) => (
-          <Square
-            key={squareIndex}
-            value={square}
-            onSquareClick={() => handleClick(squareIndex)}
-          />
+          <Square key={squareIndex} value={square} onSquareClick={() => handleClick(squareIndex)} />
         ))}
       </div>
     </>
-  );
+  )
 }
 
 function calculateWinner(squares: Squares) {
@@ -60,23 +55,23 @@ function calculateWinner(squares: Squares) {
     [2, 5, 8],
     [0, 4, 8],
     [2, 4, 6],
-  ];
+  ]
 
   for (const [a, b, c] of lines) {
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+      return squares[a]
     }
   }
 
-  return null;
+  return null
 }
 
 function calculateTurns(squares: Squares) {
-  return squares.filter((square) => !square).length;
+  return squares.filter((square) => !square).length
 }
 
 function calculateStatus(winner: string | null, turns: number, player: string) {
-  if (!winner && !turns) return "Draw";
-  if (winner) return `Winner ${winner}`;
-  return `Next player: ${player}`;
+  if (!winner && !turns) return "Draw"
+  if (winner) return `Winner ${winner}`
+  return `Next player: ${player}`
 }

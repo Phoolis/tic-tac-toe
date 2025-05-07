@@ -1,7 +1,7 @@
 type SquareProps = {
-  value: string | null;
-  onSquareClick: () => void;
-};
+  value: string | null
+  onSquareClick: () => void
+}
 
 export default function Square({ value, onSquareClick }: SquareProps) {
   return (
@@ -23,5 +23,5 @@ export default function Square({ value, onSquareClick }: SquareProps) {
     >
       {value}
     </button>
-  );
+  )
 }
